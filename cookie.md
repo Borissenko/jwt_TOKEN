@@ -1,33 +1,33 @@
-# cookie
-
-- сохраняются в браузере. Если не прописан "expires=Tue, 19 Jan 2038 03:14:07 GMT", то удаляются при закрытии броузера.
+# Cookie
+- генерируются в броузере по команде, прописанной в хедере ответа, Нр: 
+  > Set-Cookie: "connect.sid=s%3AviCsSvcvB19nA456X-Av".
+- сохраняются в браузере, 
+  продолжают быть и после закрытия броузера, если задано "expires=Tue, 19 Jan 2038 03:14:07 GMT", 
+  иначе при закрытии броузера - удаляются.
+- далее автоматически вставляются броузером в хедер каждого последующего запроса к серверу.
 - используются веб сервером для отслеживания посещений сайта, 
-  регистрации на сайте и 
+  регистрации на сайте, 
   сохранения сведений о заказах или покупках,
-  аутентификация.
+  аутентификации.
 
-При входе на сайт сервер отсылает в ответ HTTP-заголовок Set-Cookie для того, чтобы 
-установить куки со специальным уникальным идентификатором сессии («session identifier»).
-Во время следующего запроса к этому же домену браузер посылает на сервер HTTP-заголовок Cookie.
-Таким образом, сервер понимает, кто сделал запрос.
-
-- Мы также можем получить куки непосредственно из браузера, используя свойство document.cookie
-- формат "user=John;cookie2=value2"
+- формат у Cookie - строка по типу "user=John;cookieName2=value2"
 - 4кб
 - Общее количество куков на один домен ограничивается примерно 20+.
-- У куки есть ряд настроек.
-  "user=John; path=/admin; expires=Tue, 19 Jan 2038 03:14:07 GMT"
 
 
+# Параметры у Cookie:
+  "user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT"
 
-## path=/admin - кука будет доступна только для страниц /admin и /admin/something.
-## domain=site.com -
+## "path=/admin" - кука будет доступна только для страниц /admin и /admin/something.
+Нужно прописывать path=/
+
+## "domain=site.com"
 По умолчанию куки доступно лишь тому домену, который его установил.
 Если мы хотим дать поддоменам типа forum.site.com доступ к куки, это можно сделать, прописав
 document.cookie = "user=John; domain=site.com"
 
 
-## expires=Tue, 19 Jan 2038 03:14:07 GMT -
+## "expires=Tue, 19 Jan 2038 03:14:07 GMT"
 По умолчанию cookie удалятся при закрытии браузера. Такие куки называются сессионными («session cookies»).
 Если мы установим в expires прошедшую дату, то куки будет удалено.
 
@@ -37,7 +37,7 @@ date = date.toUTCString();
 document.cookie = "user=John; expires=" + date;
 
 
-## max-age=3600
+## "max-age=3600"
 - срок жизни в миллисекундах.
   Если задан ноль или отрицательное значение, то куки будет удалено.
 
@@ -46,58 +46,108 @@ document.cookie = "user=John; expires=" + date;
 Куки будет передаваться только по HTTPS-протоколу.
 По умолчанию куки, установленные сайтом http://site.com, также будут доступны на сайте https://site.com, и наоборот.
 
-## samesite=strict
+## "samesite=strict"
 - для защиты от XSRF-атаки
 
+## "signed"	
+делает куки подписанной
+
+
+
+
+
+# БРОУЗЕРНЫЕ нативные функции по работе с куками.
 ## Запись cookie
-Запись в document.cookie обновит только упомянутые в ней куки, но при этом не затронет все остальные(!).
-
->document.cookie = "user=John; max-age=3600"         // обновляем только куки с именем 'user'
-
+> document.cookie = "user=John; max-age=3600"         // обновляем ТОЛЬКО куки с именем 'user'
+Запись в document.cookie запишет/обновит только упомянутые в ней куки, но при этом не затронет все остальные(!).
 
 
-## Если в тексте ключей или значений нужны пробелы или спец символы, то требуется предварительное кодирование:
+>browser.setCookie({
+  name: "cookie-name-here",
+  value: "cookie-value-here",
+  path: "/",
+  sessionId: browser.sessionId,
+  httpOnly: false,    //из броузера читаться не будет
+});
+
+
+
+## Удаление куки
+>browser.deleteCookie()
+
+
+
+# В Node.js cookie управляются двумя методами объекта ответа:
+cookie() - устанавливает значение по ключу;
+clearCookie() - удаляет по заданному ключу значение у клиента, если ключ не задан - удаляет все. 
+
+
+
+## Чтение куков
+> let aa = document.cookie    //<==
+> let aa = browser.getCookie("cookie-name-here").value
+
+
+
+## Если в тексте ключей или значений нужны пробел или двоеточие, то требуется предварительное кодирование:
 let name = "my name";
 let value = "John Smith"
 
-// кодирует в my%20name=John%20Smith
-document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
+
+document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)  // кодируем в my%20name=John%20Smith
+или
+document.cookie = 'name' + '=' + escape(value)    //escape - свободная функция JS, =>"John%20Smith"
+unescape(value)   // декодирование обратно
 
 
 
-# Функции по работе с куками
+
+
+#  Обработка куков на frontend'e (на основе броузерных нативных функций).
+
+## brownies - библиотека для работы с куками, LocalStorage, SessionStorage
+- поддерживает подписку на них.
+https://github.com/franciscop/brownies
+
+
+
 
 ## getCookie(name) - возвращает куки с указанным name
+function getCookie(name) {           // via encodeURIComponent(value)
+  let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+  return matches ? decodeURIComponent(matches[1]) : undefined;    // значение куки кодируется, поэтому getCookie использует встроенную функцию decodeURIComponent для декодирования.
+}
 
-function getCookie(name) {
-let matches = document.cookie.match(new RegExp(
-"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-));
-return matches ? decodeURIComponent(matches[1]) : undefined;    // значение куки кодируется, поэтому getCookie использует встроенную функцию decodeURIComponent для декодирования.
+function get_cookie ( cookie_name ) {     // via unescape(value)
+  var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+
+  if ( results )
+    return ( unescape ( results[2] ) );
+  else
+    return null;
 }
 
 
 ## setCookie(name, value, options)
 function setCookie(name, value, options = {}) {
-
 options = {
-path: '/',
-// при необходимости добавьте другие значения по умолчанию
-...options
+  path: '/',
+  // при необходимости добавьте другие значения по умолчанию
+  ...options
 };
 
 if (options.expires instanceof Date) {
-options.expires = options.expires.toUTCString();
+  options.expires = options.expires.toUTCString();
 }
 
 let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
 
 for (let optionKey in options) {
-updatedCookie += "; " + optionKey;
-let optionValue = options[optionKey];
-if (optionValue !== true) {
-updatedCookie += "=" + optionValue;
-}
+  updatedCookie += "; " + optionKey;
+  let optionValue = options[optionKey];
+  if (optionValue !== true) {
+    updatedCookie += "=" + optionValue;
+  }
 }
 
 document.cookie = updatedCookie;
@@ -107,19 +157,15 @@ document.cookie = updatedCookie;
 setCookie('user', 'John', {secure: true, 'max-age': 3600});
 
 
+
 ## deleteCookie(name)
 function deleteCookie(name) {
-setCookie(name, "", {
-'max-age': -1
-})
+  setCookie(name, "", {
+    'max-age': -1
+  })
 }
 
 
-
-
-# Установка куков по инициативе сервера.
-Куки обычно устанавливаются веб-сервером при помощи заголовка Set-Cookie. 
-Затем браузер будет автоматически добавлять их в каждый запрос на тот же домен при помощи заголовка Cookie.
 
 
 
