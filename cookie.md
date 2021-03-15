@@ -1,13 +1,12 @@
 # Cookie
 - генерируются в броузере по команде, прописанной в хедере ответа, Нр: 
-  > Set-Cookie: "connect.sid=s%3AviCsSvcvB19nA456X-Av".
+  > Set-Cookie: connect.sid=s%3AviCsSvcvB19nA456X-Av; max-age=3600    //без кавычек где-либо.
 - сохраняются в браузере, 
   продолжают быть и после закрытия броузера, если задано "expires=Tue, 19 Jan 2038 03:14:07 GMT", 
   иначе при закрытии броузера - удаляются.
 - далее автоматически вставляются броузером в хедер каждого последующего запроса к серверу.
 - используются веб сервером для отслеживания посещений сайта, 
   регистрации на сайте, 
-  сохранения сведений о заказах или покупках,
   аутентификации.
 
 - формат у Cookie - строка по типу "user=John;cookieName2=value2"
@@ -16,18 +15,24 @@
 
 
 # Параметры у Cookie:
-  "user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT"
+Общий вид куки: "user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT" (?)
+Set-Cookie: refreshToken=c84f18a2-c6c7-4850-be15-93f9cbaef3b3; (?) HttpOnly; SameSite=Strict; domain=site.com; ath=/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout; expires=Tue, 19 Jan 2038 03:14:07 GMT;
 
-## "path=/admin" - кука будет доступна только для страниц /admin и /admin/something.
-Нужно прописывать path=/
 
-## "domain=site.com"
+## HttpOnly; 
+## SameSite=Strict;
+
+## domain=site.com
 По умолчанию куки доступно лишь тому домену, который его установил.
 Если мы хотим дать поддоменам типа forum.site.com доступ к куки, это можно сделать, прописав
 document.cookie = "user=John; domain=site.com"
+Для RefreshToken - это обязательное поле.
 
+## path=/admin - кука будет доступна только для страниц /admin и /admin/something.
+Нужно прописывать path=/
+Для RefreshToken - это обязательное поле.
 
-## "expires=Tue, 19 Jan 2038 03:14:07 GMT"
+## expires=Tue, 19 Jan 2038 03:14:07 GMT
 По умолчанию cookie удалятся при закрытии браузера. Такие куки называются сессионными («session cookies»).
 Если мы установим в expires прошедшую дату, то куки будет удалено.
 
@@ -37,19 +42,21 @@ date = date.toUTCString();
 document.cookie = "user=John; expires=" + date;
 
 
-## "max-age=3600"
+## max-age=3600
 - срок жизни в миллисекундах.
-  Если задан ноль или отрицательное значение, то куки будет удалено.
+Если задан ноль или отрицательное значение, то куки будет удалено.
 
+## user=John; 
 
-## "user=John; secure"
+## secure
 Куки будет передаваться только по HTTPS-протоколу.
 По умолчанию куки, установленные сайтом http://site.com, также будут доступны на сайте https://site.com, и наоборот.
 
-## "samesite=strict"
+## samesite=strict
 - для защиты от XSRF-атаки
+Для RefreshToken - это обязательное поле.
 
-## "signed"	
+## signed	
 делает куки подписанной
 
 
