@@ -19,8 +19,13 @@
 Set-Cookie: refreshToken=c84f18a2-c6c7-4850-be15-93f9cbaef3b3; (?) HttpOnly; SameSite=Strict; domain=site.com; ath=/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout; expires=Tue, 19 Jan 2038 03:14:07 GMT;
 
 
-## HttpOnly; 
+## HttpOnly;
+или
+HttpOnly: true  //при декларации в res.cookie( , , {})
+
+
 ## SameSite=Strict;
+
 
 ## domain=site.com
 По умолчанию куки доступно лишь тому домену, который его установил.
@@ -49,6 +54,9 @@ document.cookie = "user=John; expires=" + date;
 ## user=John; 
 
 ## secure
+или
+secure: true
+
 Куки будет передаваться только по HTTPS-протоколу.
 По умолчанию куки, установленные сайтом http://site.com, также будут доступны на сайте https://site.com, и наоборот.
 
@@ -84,16 +92,46 @@ document.cookie = "user=John; expires=" + date;
 
 
 
-# В Node.js cookie управляются двумя методами объекта ответа:
+
+
+# Обработка cookie в express
+npm install cookie-parser
+
+const cookieParser = require('cookie-parser')
+
+app.use(cookieParser('secret key'))
+
+app.get('/get-cookie', (req, res) => {
+  console.log('Cookie: ', req.cookies)       //читаем куки.
+  res.send('Get Cookie')
+})
+
+app.get('/set-cookie', (req, res) => {
+  res.cookie('token', '12345ABCDE', {        //устанавливаем куку.
+    maxAge: 3600 * 24,
+    secure: true,
+  })
+
+  res.send('Set Cookie')
+})
+
+## дополнительные методы
+res.clearCookie() - удаляет по заданному ключу значение у клиента, если ключ не задан - удаляет все.
+req.signedCookies  - доступ к ПОДПИСАННЫМ кукам.
+
+
+
+
+
+# Обработка cookie в Node.js на сервере.
+- управляются двумя методами объекта ответа:
 cookie() - устанавливает значение по ключу;
 clearCookie() - удаляет по заданному ключу значение у клиента, если ключ не задан - удаляет все. 
-
 
 
 ## Чтение куков
 > let aa = document.cookie    //<==
 > let aa = browser.getCookie("cookie-name-here").value
-
 
 
 ## Если в тексте ключей или значений нужны пробел или двоеточие, то требуется предварительное кодирование:
@@ -110,7 +148,10 @@ unescape(value)   // декодирование обратно
 
 
 
-#  Обработка куков на frontend'e (на основе броузерных нативных функций).
+
+
+#  Обработка куков на frontend'e.
+- на основе броузерных нативных функций.
 
 ## brownies - библиотека для работы с куками, LocalStorage, SessionStorage
 - поддерживает подписку на них.

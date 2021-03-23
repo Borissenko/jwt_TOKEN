@@ -18,16 +18,16 @@
 
 # Обработка RefreshToken'а.
 Сохраняем на клиенте в виде куки.
-В куку прописываем
-- адреса эндпоинтов аутентификации(/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout), которые должны располагаться в доменном пространстве сайта.
+Для куки прописываем параметры:
   {
+  HttpOnly;
+  SameSite=Strict;
   domain: '.super.com',
-  path: '/api/auth'
+  path: '/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout',    // адреса эндпоинтов аутентификации (/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout), которые должны располагаться в доменном пространстве сайта.
+  max-age=3600
   }
-
 
 На сервере храним в данных юзера.
 Проверяем
 - что это непросроченный RefreshToken,
 - что это ПОСЛЕДНИЙ из выданных.
-
