@@ -11,11 +11,13 @@ const port = 7000
 const tokenKey = '1a2b-3c4d-5e6f-7g8h'
 
 app.use(bodyParser.json())
+
 app.use((req, res, next) => {
   if (req.headers.authorization) {
     let tokenParts = req.headers.authorization
     .split(' ')[1]
     .split('.')
+    
     let signature = crypto
     .createHmac('SHA256', tokenKey)
     .update(`${tokenParts[0]}.${tokenParts[1]}`)
@@ -36,16 +38,12 @@ app.use((req, res, next) => {
 
 app.post('/api/auth', (req, res) => {
   for (let user of users) {
-    if (
-      req.body.login === user.login &&
-      req.body.password === user.password
-    ) {
-      let head = Buffer.from(
-        JSON.stringify({ alg: 'HS256', typ: 'jwt' })
-      ).toString('base64')
-      let body = Buffer.from(JSON.stringify(user)).toString(
-        'base64'
-      )
+    if ( req.body.login === user.login && req.body.password === user.password) {
+      
+      //Генерируем AccessToken
+      let head = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'jwt' })).toString('base64')
+      let body = Buffer.from(JSON.stringify(user)).toString('base64')
+      
       let signature = crypto
       .createHmac('SHA256', tokenKey)
       .update(`${head}.${body}`)

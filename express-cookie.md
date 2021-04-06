@@ -13,7 +13,8 @@ app.get('/get-cookie', (req, res) => {
 
 app.get('/set-cookie', (req, res) => {
   res.cookie('token', '12345ABCDE', {        //устанавливаем куку.
-    maxAge: 3600 * 24,
+    //maxAge: 3600 * 24,
+    expires: new Date(Date.now() + 900000)
     secure: true,
   })
 

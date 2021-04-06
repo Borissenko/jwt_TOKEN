@@ -20,11 +20,13 @@ Set-Cookie: refreshToken=c84f18a2-c6c7-4850-be15-93f9cbaef3b3; (?) HttpOnly; Sam
 
 
 ## HttpOnly;
+HttpOnly;             //Здесь - пишется с БОЛЬШОЙ буквы.
 или
-HttpOnly: true  //при декларации в res.cookie( , , {})
+httpOnly: true,      //указываем при декларации в res.cookie( , , {}). Здесь - пишется с МАЛЕНЬКОЙ буквы.
 
 
 ## SameSite=Strict;
+sameSite: 'Strict',
 
 
 ## domain=site.com
@@ -33,25 +35,40 @@ HttpOnly: true  //при декларации в res.cookie( , , {})
 document.cookie = "user=John; domain=site.com"
 Для RefreshToken - это обязательное поле.
 
+
 ## path=/admin - кука будет доступна только для страниц /admin и /admin/something.
 Нужно прописывать path=/
 Для RefreshToken - это обязательное поле.
+
 
 ## expires=Tue, 19 Jan 2038 03:14:07 GMT
 По умолчанию cookie удалятся при закрытии браузера. Такие куки называются сессионными («session cookies»).
 Если мы установим в expires прошедшую дату, то куки будет удалено.
 
-// +1 день от текущей даты
-let date = new Date(Date.now() + 86400e3);
-date = date.toUTCString();
-document.cookie = "user=John; expires=" + date;
+expires: new Date(Date.now() + 3600000 * 24)   // 2021-03-25T09:53:13.067Z - работает.
+
+### new Date(Date.now() + 3600000 * 24)   
+-  2021-03-25T09:53:13.067Z - работает.
+
+### date.toUTCString()
+let date = new Date(Date.now() + 86400e3)
+date = date.toUTCString()     //to "Mon, 03 Jul 2006 21:44:38 GMT" - НЕ работает.
+
+### задаем конкретную дату
+var cookie_date = new Date( 2003, 01, 15 )
+document.cookie = "username=Вася;expires=" + cookie_date.toGMTString()
 
 
 ## max-age=3600
-- срок жизни в миллисекундах.
-Если задан ноль или отрицательное значение, то куки будет удалено.
+- срок жизни в МИЛЛИсекундах.
+Если задан ноль или отрицательное значение, то кука будет удалена.
+  
+maxAge: 3600000 * 24,   // 3600000ms * 24 = 24 часа
+
+
 
 ## user=John; 
+
 
 ## secure
 или
@@ -60,9 +77,11 @@ secure: true
 Куки будет передаваться только по HTTPS-протоколу.
 По умолчанию куки, установленные сайтом http://site.com, также будут доступны на сайте https://site.com, и наоборот.
 
+
 ## samesite=strict
 - для защиты от XSRF-атаки
 Для RefreshToken - это обязательное поле.
+
 
 ## signed	
 делает куки подписанной
@@ -72,6 +91,9 @@ secure: true
 
 
 # БРОУЗЕРНЫЕ нативные функции по работе с куками.
+NB!
+работает только с куками, у которых прописано "httpOnly: false"(!).
+
 ## Запись cookie
 > document.cookie = "user=John; max-age=3600"         // обновляем ТОЛЬКО куки с именем 'user'
 Запись в document.cookie запишет/обновит только упомянутые в ней куки, но при этом не затронет все остальные(!).
@@ -88,7 +110,15 @@ secure: true
 
 
 ## Удаление куки
+### Методом deleteCookie()
 >browser.deleteCookie()
+
+### Переопределяем у текущей куки время ее жизни
+- ставим 
+  expires=Mon, 05 Jul 1982 16:37:55 GMT; с прошедшей датой 
+или 
+  max-age = -5 (отрицательное значение)
+  
 
 
 
@@ -110,6 +140,8 @@ app.get('/set-cookie', (req, res) => {
   res.cookie('token', '12345ABCDE', {        //устанавливаем куку.
     maxAge: 3600 * 24,
     secure: true,
+    httpOnly: true,
+    sameSite: 'Strict',
   })
 
   res.send('Set Cookie')
@@ -207,11 +239,14 @@ setCookie('user', 'John', {secure: true, 'max-age': 3600});
 
 
 ## deleteCookie(name)
+- работает только с куками, у которых прописано "httpOnly: false"(!).
+
 function deleteCookie(name) {
-  setCookie(name, "", {
-    'max-age': -1
-  })
+  setCookie(name, "", {maxAge: -1})
 }
+
+//или
+document.cookie = "refreshToken=5;max-age=-1;path=путь;domain=домен;secure"
 
 
 
