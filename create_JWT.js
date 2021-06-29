@@ -13,7 +13,7 @@ const tokenKey = '1a2b-3c4d-5e6f-7g8h'
 app.use(bodyParser.json())
 
 app.use((req, res, next) => {
-  if (req.headers.authorization) {
+  if (req.headers.authorization) {               //проверка валидности accessToken'a
     let tokenParts = req.headers.authorization
     .split(' ')[1]
     .split('.')
@@ -24,12 +24,8 @@ app.use((req, res, next) => {
     .digest('base64')
     
     if (signature === tokenParts[2])
-      req.user = JSON.parse(
-        Buffer.from(tokenParts[1], 'base64').toString(
-          'utf8'
-        )
-      )
-    
+      req.user = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))   //получаем обратно дешифрованное тело токена { login: '(999) 999-99-99', exp: 1622532886941 }
+      
     next()
   }
   
@@ -52,21 +48,22 @@ app.post('/api/auth', (req, res) => {
       return res.status(200).json({
         id: user.id,
         login: user.login,
-        token: `${head}.${body}.${signature}`,
+        token: `Bearer ${head}.${body}.${signature}`,
       })
     }
   }
   
-  return res.status(404).json({ message: 'User not found' })
+  return res.status(404).json({ message: 'User not found' })    // <<<<<<<<<<<<<<<<<<
 })
 
+
 app.get('/user', (req, res) => {
-  if (req.user) return res.status(200).json(req.user)
+  if (req.user)
+    return res.status(200).json(req.user)
   else
-    return res
-    .status(401)
-    .json({ message: 'Not authorized' })
+    return res.status(401).json({ message: 'Not authorized' })    // <<<<<<<<<<<<<<<<<<
 })
+
 
 app.listen(port, host, () =>
   console.log(`Server listens http://${host}:${port}`)

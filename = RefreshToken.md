@@ -31,3 +31,34 @@
 Проверяем
 - что это непросроченный RefreshToken,
 - что это ПОСЛЕДНИЙ из выданных.
+
+
+
+# 
+RefreshToken - просто рамдомная строка, в ней НЕ обозначен срок жизни,
+срок жизни обозначаем:
+- в сроке жизни куки, в состав которой входит RefreshToken,
+- в refreshSession, который храниться на сервере.
+{
+    "id" SERIAL PRIMARY KEY,
+    "userId" uuid REFERENCES users(id) ON DELETE CASCADE,   <<<<
+    "refreshToken" uuid NOT NULL,  <<<<
+    "ua" character varying(200) NOT NULL, /* user-agent */
+    "fingerprint" character varying(200) NOT NULL,
+    "ip" character varying(15) NOT NULL,
+    "expiresIn" bigint NOT NULL,   <<< равен maxAge у куки
+    "createdAt" timestamp with time zone NOT NULL DEFAULT now()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

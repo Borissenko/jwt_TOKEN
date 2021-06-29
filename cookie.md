@@ -10,13 +10,18 @@
   аутентификации.
 
 - формат у Cookie - строка по типу "user=John;cookieName2=value2"
+  "connect.sid=s%3A4FL6ne29YyPvnx_dwAC5k6iFlhuVVdRi.VoYBwevobEjMEuKjFjncnYuRgn9Gt%2BNj2FqEyU7F0Qk; refreshToken=7yhRM9SOvQB3ADkmxBnoFWq6TIs"
+
 - 4кб
 - Общее количество куков на один домен ограничивается примерно 20+.
 
 
 # Параметры у Cookie:
-Общий вид куки: "user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT" (?)
-Set-Cookie: refreshToken=c84f18a2-c6c7-4850-be15-93f9cbaef3b3; (?) HttpOnly; SameSite=Strict; domain=site.com; ath=/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout; expires=Tue, 19 Jan 2038 03:14:07 GMT;
+Куки в хедере запросов:
+"connect.sid=s%3A4FL6ne29YyPvnx_dwAC5k6iFlhuVVdRi.VoYBwevobEjMEuKjFjncnYuRgn9Gt%2BNj2FqEyU7F0Qk; refreshToken=7yhRM9SOvQB3ADkmxBnoFWq6TIs"
+Общий вид при декларации куки: 
+"user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT"
+Set-Cookie: refreshToken=c84f18a2-c6c7-4850-be15-93f9cbaef3b3; HttpOnly; SameSite=Strict; domain=site.com; ath=/api/auth/login, /api/auth/refresh-tokens, /api/auth/logout; expires=Tue, 19 Jan 2038 03:14:07 GMT;
 
 
 ## HttpOnly;
@@ -109,9 +114,15 @@ NB!
 
 
 
+## Чтение куки
+в консоле броузера вводим
+> document.cookie
+
+
 ## Удаление куки
 ### Методом deleteCookie()
 >browser.deleteCookie()
+
 
 ### Переопределяем у текущей куки время ее жизни
 - ставим 
@@ -119,6 +130,13 @@ NB!
 или 
   max-age = -5 (отрицательное значение)
   
+
+## Выделениезначения определенной куки из всего списка куков на клиенте
+   function getCookie (name: String): String {
+     let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+     return matches ? decodeURIComponent(matches[1]) : ''
+   }
+   console.log('getCookie ====', getCookie('connect.sid'))
 
 
 
@@ -128,16 +146,10 @@ NB!
 npm install cookie-parser
 
 const cookieParser = require('cookie-parser')
-
 app.use(cookieParser('secret key'))
 
-app.get('/get-cookie', (req, res) => {
-  console.log('Cookie: ', req.cookies)       //читаем куки.
-  res.send('Get Cookie')
-})
-
 app.get('/set-cookie', (req, res) => {
-  res.cookie('token', '12345ABCDE', {        //устанавливаем куку.
+  res.cookie('token', '12345ABCDE', {        //из сервера устанавливаем куку.
     maxAge: 3600 * 24,
     secure: true,
     httpOnly: true,
@@ -147,6 +159,33 @@ app.get('/set-cookie', (req, res) => {
   res.send('Set Cookie')
 })
 
+app.get('/get-cookie', (req, res) => {
+  console.log('Cookie: ', req.cookies)       //читаем куки на сервере.
+  res.send('Get Cookie')
+})
+
+
+
+## На клиенте из броузерных кук вытаскиваем 'connect.sid'-куку,
+далее шлем ее в pl запроса а сервер,
+далее шлем ее в pl запроса а сервер,
+далее на сервере вытаскиваем ее из тела запроса и ДЕШИФРУЕМ.
+а) На клиенте из броузерных кук вытаскиваем 'connect.sid'-куку
+
+function getCookie (name: String): String {
+  let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+  return matches ? decodeURIComponent(matches[1]) : ''
+}
+
+б)далее шлем ее в pl запроса а сервер
+axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})
+
+в)далее на сервере вытаскиваем ее из тела запроса и ДЕШИФРУЕМ
+const cookieParser = require('cookie-parser')
+sessionID = cookieParser.signedCookie(req.body.connectSidCookie, 'Nick')  //  secret: 'Nick', когда генерировали сессионную куку на сервере
+
+
+
 ## дополнительные методы
 res.clearCookie() - удаляет по заданному ключу значение у клиента, если ключ не задан - удаляет все.
 req.signedCookies  - доступ к ПОДПИСАННЫМ кукам.
@@ -155,7 +194,7 @@ req.signedCookies  - доступ к ПОДПИСАННЫМ кукам.
 
 
 
-# Обработка cookie в Node.js на сервере.
+# Обработка cookie на клиенте.
 - управляются двумя методами объекта ответа:
 cookie() - устанавливает значение по ключу;
 clearCookie() - удаляет по заданному ключу значение у клиента, если ключ не задан - удаляет все. 
@@ -181,8 +220,7 @@ unescape(value)   // декодирование обратно
 
 
 
-
-#  Обработка куков на frontend'e.
+# Готовые функции по бработке куков на frontend'e.
 - на основе броузерных нативных функций.
 
 ## brownies - библиотека для работы с куками, LocalStorage, SessionStorage
@@ -193,7 +231,7 @@ https://github.com/franciscop/brownies
 
 
 ## getCookie(name) - возвращает куки с указанным name
-function getCookie(name) {           // via encodeURIComponent(value)
+function getCookie(name) {           // via encodeURIComponent(value). РАБОТАЕТ.
   let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
   return matches ? decodeURIComponent(matches[1]) : undefined;    // значение куки кодируется, поэтому getCookie использует встроенную функцию decodeURIComponent для декодирования.
 }
@@ -251,6 +289,8 @@ document.cookie = "refreshToken=5;max-age=-1;path=путь;domain=домен;sec
 
 
 
+# axios- запросы, что бы куки отправлялись.
+axios.get('url', {withCredentials: true})
 
 
 

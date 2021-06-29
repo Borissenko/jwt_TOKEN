@@ -57,7 +57,7 @@ function authclients(req, res) {
 
 
 # axios- запросы, что бы куки отправлялись.
-axios.get('some api url', {withCredentials: true});
+axios.get('url', {withCredentials: true})
 
 
 
@@ -104,6 +104,7 @@ app.get('/cookie-test', function(req, res){
         res.cookie('already-had-cookie', 'false').send();
     }
 });
+
 
 
 ## Команды.
