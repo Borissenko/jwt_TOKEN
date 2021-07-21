@@ -2,21 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8af87997-09d6-4e93-a13c-5fc1ae358c0c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/= AccessToken.md" beforeDir="false" afterPath="$PROJECT_DIR$/= AccessToken.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/= RefreshToken.md" beforeDir="false" afterPath="$PROJECT_DIR$/= RefreshToken.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/= Алгоритм.md" beforeDir="false" afterPath="$PROJECT_DIR$/= Алгоритм.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cookie.md" beforeDir="false" afterPath="$PROJECT_DIR$/cookie.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_JWT.js" beforeDir="false" afterPath="$PROJECT_DIR$/create_JWT.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_JWT_with_jsonwebtoken.js" beforeDir="false" afterPath="$PROJECT_DIR$/create_JWT_with_jsonwebtoken.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_RefreshToken.js" beforeDir="false" afterPath="$PROJECT_DIR$/create_RefreshToken.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/express-cookie.md" beforeDir="false" afterPath="$PROJECT_DIR$/express-cookie.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fingerprint.md" beforeDir="false" afterPath="$PROJECT_DIR$/fingerprint.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/local_store.md" beforeDir="false" afterPath="$PROJECT_DIR$/local_store.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/passport.js.md" beforeDir="false" afterPath="$PROJECT_DIR$/passport.js.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/session.md" beforeDir="false" afterPath="$PROJECT_DIR$/session.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Маркер_Пользователя, где прячем.md" beforeDir="false" afterPath="$PROJECT_DIR$/Маркер_Пользователя, где прячем.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Управление куками из express.md" beforeDir="false" afterPath="$PROJECT_DIR$/Управление куками из express.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/терминология.md" beforeDir="false" afterPath="$PROJECT_DIR$/терминология.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ПРОДВИНУТОЕ.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/описание_авторизации.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +18,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1rU8SlYf9Q7QNq6oa2tSNXpH7GT" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -38,11 +29,17 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -58,6 +55,10 @@
       <workItem from="1622057818618" duration="39570000" />
       <workItem from="1623066254669" duration="3698000" />
       <workItem from="1623656586850" duration="849000" />
+      <workItem from="1625236099211" duration="59000" />
+      <workItem from="1625237148907" duration="9000" />
+      <workItem from="1625987132746" duration="103000" />
+      <workItem from="1626415835014" duration="1176000" />
     </task>
     <servers />
   </component>
